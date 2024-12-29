@@ -1,9 +1,18 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Gift, Check } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface User {
   id: number;
@@ -88,7 +97,7 @@ const GiftExchangeMain: React.FC = () => {
   const [wishlists, setWishlists] = useState(initialWishlists);
   const [newItemDescription, setNewItemDescription] = useState("");
   const [newItemDetails, setNewItemDetails] = useState("");
-  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const authenticatedUserId = 1;
 
@@ -109,7 +118,13 @@ const GiftExchangeMain: React.FC = () => {
 
     setNewItemDescription("");
     setNewItemDetails("");
-    setIsAddingItem(false);
+    setIsDialogOpen(false);
+  };
+
+  const handleAddClick = () => {
+    if (newItemDescription.trim()) {
+      setIsDialogOpen(true);
+    }
   };
 
   const handleClaimItem = (itemId: number) => {
@@ -189,54 +204,63 @@ const GiftExchangeMain: React.FC = () => {
             <CardContent className="p-4 space-y-3">
               {selectedUser === authenticatedUserId ? (
                 <>
-                  {!isAddingItem ? (
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsAddingItem(true)}
-                      className="w-full border border-dashed border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50"
-                    >
-                      + Add a gift to your wishlist
-                    </Button>
-                  ) : (
-                    <div className="space-y-3">
+                  <div className="flex justify-between items-center gap-2">
+                    <div className="flex-1">
                       <Input
-                        placeholder="What would you like?"
+                        placeholder="Add something to your wishlist..."
                         value={newItemDescription}
                         onChange={(e) => setNewItemDescription(e.target.value)}
-                        className="w-full"
+                        className="rounded-xl placeholder:text-gray-400 border-indigo-600"
                       />
-                      <Textarea
-                        placeholder="Add any details about this item..."
-                        value={newItemDetails}
-                        onChange={(e) => setNewItemDetails(e.target.value)}
-                        className="w-full min-h-[80px]"
-                      />
-                      <div className="flex justify-end gap-2">
+                    </div>
+                    <Button
+                      onClick={handleAddClick}
+                      variant="ghost"
+                      className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg border-0"
+                      disabled={!newItemDescription.trim()}
+                    >
+                      Add
+                    </Button>
+                  </div>
+
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Add Item Details</DialogTitle>
+                        <DialogDescription>
+                          Add any additional information about "{newItemDescription}" that would be helpful for others.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <Textarea
+                          placeholder="Add size, color preferences, or any other helpful details..."
+                          value={newItemDetails}
+                          onChange={(e) => setNewItemDetails(e.target.value)}
+                          className="min-h-[100px]"
+                        />
+                      </div>
+                      <DialogFooter>
                         <Button
                           variant="ghost"
                           onClick={() => {
-                            setIsAddingItem(false);
-                            setNewItemDescription("");
+                            setIsDialogOpen(false);
                             setNewItemDetails("");
                           }}
                         >
                           Cancel
                         </Button>
-                        <Button
-                          onClick={handleAddItem}
-                          disabled={!newItemDescription.trim()}
-                        >
+                        <Button onClick={handleAddItem}>
                           Add to wishlist
                         </Button>
-                      </div>
-                    </div>
-                  )}
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
 
-                  <div className="pt-4">
+                  <div className="space-y-3 mt-4">
                     {wishlists[authenticatedUserId]?.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm mb-3"
+                        className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm"
                       >
                         <div>
                           <span className="text-gray-700">
