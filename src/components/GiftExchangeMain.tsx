@@ -32,9 +32,12 @@ interface WishlistItem {
 
 // Mock data
 const mockUsers: User[] = [
-  { id: 1, name: "Sarah Johnson", isAuthenticated: true },
-  { id: 2, name: "Mike Chen", isAuthenticated: false },
-  { id: 3, name: "Emma Wilson", isAuthenticated: false },
+  { id: 1, name: "Hannah Chow", isAuthenticated: true },
+  { id: 2, name: "Bennet Chow", isAuthenticated: false },
+  { id: 3, name: "Beth Chow", isAuthenticated: false },
+  { id: 4, name: "Kaitlin Diversey", isAuthenticated: false },
+  { id: 5, name: "Lon Chow", isAuthenticated: false },
+  { id: 6, name: "Nolan Chow", isAuthenticated: false },
 ];
 
 const initialWishlists: Record<number, WishlistItem[]> = {
@@ -57,13 +60,13 @@ const initialWishlists: Record<number, WishlistItem[]> = {
       id: 1, 
       description: "Gaming mouse - Logitech G502 HERO High Performance",
       details: "Preferably in black. Need one with programmable buttons for work.",
-      claimedBy: { id: 3, name: "Emma Wilson" } 
+      claimedBy: { id: 3, name: "Kaitlin Diversey" } 
     },
     { 
       id: 2, 
       description: "Coffee maker",
       details: "Looking for a drip coffee maker with timer functionality. 12-cup capacity preferred.",
-      claimedBy: { id: 1, name: "Sarah Johnson" } 
+      claimedBy: { id: 1, name: "Hannah Chow" } 
     },
     { 
       id: 3, 
@@ -75,7 +78,7 @@ const initialWishlists: Record<number, WishlistItem[]> = {
       id: 4,
       description: "Mechanical keyboard",
       details: "Cherry MX Brown switches. TKL layout if possible.",
-      claimedBy: { id: 3, name: "Emma Wilson" }
+      claimedBy: { id: 3, name: "Kaitlin Diversey" }
     },
     {
       id: 5,
