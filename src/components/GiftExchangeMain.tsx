@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,20 @@ const mockUsers: User[] = [
 ];
 
 const initialWishlists: Record<number, WishlistItem[]> = {
+  1: [
+    {
+      id: 1,
+      description: "Plant watering can",
+      details: "Looking for a small, decorative watering can for indoor plants",
+      claimedBy: null
+    },
+    {
+      id: 2,
+      description: "Kindle Paperwhite",
+      details: "The latest model with the warm light feature would be great",
+      claimedBy: null
+    }
+  ],
   2: [
     { 
       id: 1, 
@@ -72,6 +85,30 @@ const GiftExchangeMain: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<number>(2);
   const [wishlists, setWishlists] = useState(initialWishlists);
   const authenticatedUserId = 1;
+
+  const [newItemDescription, setNewItemDescription] = useState("");
+  const [newItemDetails, setNewItemDetails] = useState("");
+  const [isAddingItem, setIsAddingItem] = useState(false);
+
+  const handleAddItem = () => {
+    if (!newItemDescription.trim()) return;
+
+    const newItem: WishlistItem = {
+      id: Math.max(0, ...wishlists[authenticatedUserId].map(item => item.id)) + 1,
+      description: newItemDescription.trim(),
+      details: newItemDetails.trim(),
+      claimedBy: null
+    };
+
+    setWishlists(prev => ({
+      ...prev,
+      [authenticatedUserId]: [...prev[authenticatedUserId], newItem]
+    }));
+
+    setNewItemDescription("");
+    setNewItemDetails("");
+    setIsAddingItem(false);
+  };
 
   const handleClaimItem = (itemId: number) => {
     setWishlists(prev => ({
