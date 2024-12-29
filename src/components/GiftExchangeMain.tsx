@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Gift, Check } from "lucide-react";
 
 interface User {
@@ -84,11 +86,11 @@ const initialWishlists: Record<number, WishlistItem[]> = {
 const GiftExchangeMain: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<number>(2);
   const [wishlists, setWishlists] = useState(initialWishlists);
-  const authenticatedUserId = 1;
-
   const [newItemDescription, setNewItemDescription] = useState("");
   const [newItemDetails, setNewItemDetails] = useState("");
   const [isAddingItem, setIsAddingItem] = useState(false);
+  
+  const authenticatedUserId = 1;
 
   const handleAddItem = () => {
     if (!newItemDescription.trim()) return;
@@ -185,50 +187,113 @@ const GiftExchangeMain: React.FC = () => {
           </h2>
           <Card className="shadow-sm rounded-xl overflow-hidden">
             <CardContent className="p-4 space-y-3">
-              {wishlists[selectedUser]?.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm"
-                >
-                  <div className="flex-1">
-                    <div>
-                      <span className={item.claimedBy ? 'line-through text-gray-600' : 'text-gray-700'}>
-                        {item.description}
-                      </span>
-                      <p className="text-sm text-gray-500 mt-1">{item.details}</p>
-                    </div>
-                  </div>
-                  {selectedUser !== authenticatedUserId && !item.claimedBy && (
-                    <Button 
-                      variant="ghost"
-                      className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg border-0"
-                      onClick={() => handleClaimItem(item.id)}
-                    >
-                      <Gift className="w-4 h-4 mr-1" />
-                      Claim Gift
-                    </Button>
-                  )}
-                                        {item.claimedBy && item.claimedBy.id !== authenticatedUserId && (
-                        <span className="text-sm text-gray-500 min-w-[80px] text-right flex items-center justify-end gap-1">
-                          <Gift className="w-3 h-3" />
-                          Claimed by {item.claimedBy.name}
-                        </span>
-                      )}
-                      {item.claimedBy?.id === authenticatedUserId && (
+              {selectedUser === authenticatedUserId ? (
+                <>
+                  {!isAddingItem ? (
                     <Button
-                      variant="ghost"
-                      className="text-green-600 hover:text-red-600 text-sm p-0 hover:bg-transparent min-w-[80px] transition-none group"
-                      onClick={() => handleUnclaimItem(item.id)}
+                      variant="outline"
+                      onClick={() => setIsAddingItem(true)}
+                      className="w-full border border-dashed border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50"
                     >
-                      <div className="flex items-center gap-2">
-                        <Check className="w-4 h-4 group-hover:hidden" />
-                        <span className="group-hover:hidden">Claimed</span>
-                        <span className="hidden group-hover:inline">Un-claim?</span>
-                      </div>
+                      + Add a gift to your wishlist
                     </Button>
+                  ) : (
+                    <div className="space-y-3">
+                      <Input
+                        placeholder="What would you like?"
+                        value={newItemDescription}
+                        onChange={(e) => setNewItemDescription(e.target.value)}
+                        className="w-full"
+                      />
+                      <Textarea
+                        placeholder="Add any details about this item..."
+                        value={newItemDetails}
+                        onChange={(e) => setNewItemDetails(e.target.value)}
+                        className="w-full min-h-[80px]"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setIsAddingItem(false);
+                            setNewItemDescription("");
+                            setNewItemDetails("");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleAddItem}
+                          disabled={!newItemDescription.trim()}
+                        >
+                          Add to wishlist
+                        </Button>
+                      </div>
+                    </div>
                   )}
-                </div>
-              ))}
+
+                  <div className="pt-4">
+                    {wishlists[authenticatedUserId]?.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm mb-3"
+                      >
+                        <div>
+                          <span className="text-gray-700">
+                            {item.description}
+                          </span>
+                          <p className="text-sm text-gray-500 mt-1">{item.details}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                wishlists[selectedUser]?.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm"
+                  >
+                    <div className="flex-1">
+                      <div>
+                        <span className={item.claimedBy ? 'line-through text-gray-600' : 'text-gray-700'}>
+                          {item.description}
+                        </span>
+                        <p className="text-sm text-gray-500 mt-1">{item.details}</p>
+                      </div>
+                    </div>
+                    {selectedUser !== authenticatedUserId && !item.claimedBy && (
+                      <Button 
+                        variant="ghost"
+                        className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg border-0"
+                        onClick={() => handleClaimItem(item.id)}
+                      >
+                        <Gift className="w-4 h-4 mr-1" />
+                        Claim Gift
+                      </Button>
+                    )}
+                    {item.claimedBy && item.claimedBy.id !== authenticatedUserId && (
+                      <span className="text-sm text-gray-500 min-w-[80px] text-right flex items-center justify-end gap-1">
+                        <Gift className="w-3 h-3" />
+                        Claimed by {item.claimedBy.name}
+                      </span>
+                    )}
+                    {item.claimedBy?.id === authenticatedUserId && (
+                      <Button
+                        variant="ghost"
+                        className="text-green-600 hover:text-red-600 text-sm p-0 hover:bg-transparent min-w-[80px] transition-none group"
+                        onClick={() => handleUnclaimItem(item.id)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 group-hover:hidden" />
+                          <span className="group-hover:hidden">Claimed</span>
+                          <span className="hidden group-hover:inline">Un-claim?</span>
+                        </div>
+                      </Button>
+                    )}
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>
