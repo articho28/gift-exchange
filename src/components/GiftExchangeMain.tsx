@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -186,7 +185,7 @@ const GiftExchangeMain: React.FC = () => {
                     : 'bg-white hover:bg-gray-50'
                 }`}
               >
-                <div className="w-12 h-12 bg-gray-100 rounded-full shadow-sm" />
+                <div className="w-12 h-12 bg-gray-100 rounded-full shadow-sm"/>
                 <div>
                   <div className="font-medium text-gray-800">{user.name}</div>
                   {user.isAuthenticated && (
@@ -213,7 +212,7 @@ const GiftExchangeMain: React.FC = () => {
                         placeholder="Add something to your wishlist..."
                         value={newItemDescription}
                         onChange={(e) => setNewItemDescription(e.target.value)}
-                        className="rounded-xl placeholder:text-gray-400 border-indigo-600"
+                        className="placeholder:text-gray-400 border-indigo-600"
                       />
                     </div>
                     <Button
