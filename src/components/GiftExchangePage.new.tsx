@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Gift, Check } from "lucide-react";
+import { Gift, Check, ArrowLeft } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MainLayout } from '@/components/layout/MainLayout';
 import { User } from '@/types/user';
+import { mockOccasions } from '@/types/occasion';
 
 interface WishlistItem {
   id: number;
@@ -68,29 +69,13 @@ const initialWishlists: Record<number, WishlistItem[]> = {
       description: "Hiking boots",
       details: "Size 10, waterproof. Something suitable for rough terrain.",
       claimedBy: null 
-    },
-    {
-      id: 4,
-      description: "Mechanical keyboard",
-      details: "Cherry MX Brown switches. TKL layout if possible.",
-      claimedBy: { id: 3, name: "Kaitlin Diversey" }
-    },
-    {
-      id: 5,
-      description: "Board game - Catan",
-      details: "Base game only, don't have any expansions yet.",
-      claimedBy: null
-    },
-    {
-      id: 6,
-      description: "Wireless earbuds",
-      details: "Need something with good battery life and noise cancellation.",
-      claimedBy: null
     }
   ]
 };
 
 const GiftExchangePage: React.FC = () => {
+  const { occasionId } = useParams();
+  const navigate = useNavigate();
   const [selectedUser, setSelectedUser] = useState<number>(2);
   const [wishlists, setWishlists] = useState(initialWishlists);
   const [newItemDescription, setNewItemDescription] = useState("");
@@ -98,7 +83,13 @@ const GiftExchangePage: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const authenticatedUserId = 1;
-  const authenticatedUser = mockUsers.find(u => u.id === authenticatedUserId)!;
+
+  const occasion = mockOccasions.find(o => o.id === Number(occasionId));
+
+  if (!occasionId || !occasion) {
+    navigate('/app');
+    return null;
+  }
 
   const handleAddItem = () => {
     if (!newItemDescription.trim()) return;
@@ -118,12 +109,6 @@ const GiftExchangePage: React.FC = () => {
     setNewItemDescription("");
     setNewItemDetails("");
     setIsDialogOpen(false);
-  };
-
-  const handleAddClick = () => {
-    if (newItemDescription.trim()) {
-      setIsDialogOpen(true);
-    }
   };
 
   const handleClaimItem = (itemId: number) => {
@@ -155,11 +140,28 @@ const GiftExchangePage: React.FC = () => {
   };
 
   return (
-    <MainLayout user={authenticatedUser}>
+    <div className="space-y-8">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/app')}
+          className="text-gray-600 hover:text-gray-800"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back to Occasions
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {occasion.title}
+          </h1>
+          <p className="text-sm text-gray-500">{occasion.description}</p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Column - Profiles */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 px-2">Profiles</h2>
+          <h2 className="text-xl font-semibold text-gray-800 px-2">Participants</h2>
           <div className="space-y-3">
             {mockUsers.map((user) => (
               <div
@@ -190,7 +192,7 @@ const GiftExchangePage: React.FC = () => {
           </h2>
           <Card className="shadow-sm rounded-xl overflow-hidden">
             <CardContent className="p-4 space-y-3">
-              {selectedUser === authenticatedUserId ? (
+              {selectedUser === authenticatedUserId && (
                 <>
                   <div className="flex justify-between items-center gap-2">
                     <div className="flex-1">
@@ -202,7 +204,7 @@ const GiftExchangePage: React.FC = () => {
                       />
                     </div>
                     <Button
-                      onClick={handleAddClick}
+                      onClick={() => setIsDialogOpen(true)}
                       variant="ghost"
                       className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg border-0"
                       disabled={!newItemDescription.trim()}
@@ -228,13 +230,7 @@ const GiftExchangePage: React.FC = () => {
                         />
                       </div>
                       <DialogFooter>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            setIsDialogOpen(false);
-                            setNewItemDetails("");
-                          }}
-                        >
+                        <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
                           Cancel
                         </Button>
                         <Button onClick={handleAddItem}>
@@ -243,25 +239,11 @@ const GiftExchangePage: React.FC = () => {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-
-                  <div className="space-y-3 mt-4">
-                    {wishlists[authenticatedUserId]?.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm"
-                      >
-                        <div>
-                          <span className="text-gray-700">
-                            {item.description}
-                          </span>
-                          <p className="text-sm text-gray-500 mt-1">{item.details}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </>
-              ) : (
-                wishlists[selectedUser]?.map((item) => (
+              )}
+
+              <div className="space-y-3">
+                {wishlists[selectedUser]?.map((item) => (
                   <div
                     key={item.id}
                     className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white transition-all hover:shadow-sm"
@@ -304,13 +286,13 @@ const GiftExchangePage: React.FC = () => {
                       </Button>
                     )}
                   </div>
-                ))
-              )}
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </MainLayout>
+    </div>
   );
 };
 

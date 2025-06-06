@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "@/context/AuthContext"
 
 export function LandingPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
@@ -14,19 +16,30 @@ export function LandingPage() {
           Make gift-giving meaningful and organized with our gift exchange platform
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Button 
-            size="lg"
-            onClick={() => navigate("/signup")}
-          >
-            Sign up
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg"
-            onClick={() => navigate("/signin")}
-          >
-            Sign in
-          </Button>
+          {user ? (
+            <Button 
+              size="lg"
+              onClick={() => navigate("/occasions")}
+            >
+              View Gifts!
+            </Button>
+          ) : (
+            <>
+              <Button 
+                size="lg"
+                onClick={() => navigate("/signup")}
+              >
+                Sign up
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => navigate("/signin")}
+              >
+                Sign in
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
