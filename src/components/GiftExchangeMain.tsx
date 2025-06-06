@@ -12,12 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-interface User {
-  id: number;
-  name: string;
-  isAuthenticated: boolean;
-}
+import { MainLayout } from '@/components/layout/MainLayout';
+import { User } from '@/types/user';
 
 interface WishlistItem {
   id: number;
@@ -94,7 +90,7 @@ const initialWishlists: Record<number, WishlistItem[]> = {
   ]
 };
 
-const GiftExchangeMain: React.FC = () => {
+const GiftExchangePage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<number>(2);
   const [wishlists, setWishlists] = useState(initialWishlists);
   const [newItemDescription, setNewItemDescription] = useState("");
@@ -102,6 +98,7 @@ const GiftExchangeMain: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const authenticatedUserId = 1;
+  const authenticatedUser = mockUsers.find(u => u.id === authenticatedUserId)!;
 
   const handleAddItem = () => {
     if (!newItemDescription.trim()) return;
@@ -158,18 +155,7 @@ const GiftExchangeMain: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-5xl">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-8 px-2">
-        <div className="w-8 h-8 bg-gray-100 rounded-full shadow-sm" />
-        <div>
-          <span className="text-gray-500">Logged in as</span>{" "}
-          <span className="text-indigo-600 font-medium">
-            {mockUsers.find(u => u.id === authenticatedUserId)?.name}
-          </span>
-        </div>
-      </div>
-
+    <MainLayout user={authenticatedUser}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Column - Profiles */}
         <div className="space-y-4">
@@ -324,8 +310,8 @@ const GiftExchangeMain: React.FC = () => {
           </Card>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
-export default GiftExchangeMain;
+export default GiftExchangePage;
